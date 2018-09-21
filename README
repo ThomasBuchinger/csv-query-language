@@ -1,0 +1,9 @@
+# CQL
+
+# Runtime Rependencies
+yum install boost-program-options
+
+# Devel dependencies
+Make sure the boost program_options library and the boost headers installed
+
+yum install boost-devel

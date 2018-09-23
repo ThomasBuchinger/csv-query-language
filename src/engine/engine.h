@@ -3,16 +3,18 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include "file_info.h"
 
 class Engine {
 public:
-    void open_file(std::string, std::string, std::string);
+    void open_file(std::map<std::string,std::string>);
     void list_file();
-//    void print_file(std::string, int, int);
-    void close_file(std::string);
+    void print_file(FileInfo, int, int);
+    void close_file(FileInfo);
 
 private:
+    FileInfo get_file_by_name(std::string);
     std::vector<FileInfo> files;
 
 };

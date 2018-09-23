@@ -4,8 +4,8 @@ INCLUDE  = include,/usr/include
 LIBS     = lib
 LINKED_LIBS = boost_program_options
 
-CFLAGS   = -Wall -g
-CC       = g++ -I ${INCLUDE} -l ${LINKED_LIBS} ${CFLAGS}
+CXXFLAGS   = -Wall -g -std=c++11
+CC       = g++ -I ${INCLUDE} -l ${LINKED_LIBS}
 LDFLAGS  = 
 
 .PHONY: clean install uninstall prep engine
@@ -18,7 +18,7 @@ all: prep engine.a cql
 cql: src/bootstrap.cpp src/cli/cli.o 
 	$(CC) $? -L ${LIBS} -l engine -o $@
 
-engine.a: src/engine/cmd_file.o
+engine.a: src/engine/cmd_file.o src/lib/csv.o
 	ar rvs ${LIBS}/lib$@ $?
 
 prep:

@@ -1,15 +1,19 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <map>
 #include "engine.h"
 #include "file_info.h"
 
 using std::string;
 using std::vector;
+using std::map;
 using std::cout;
 using std::endl;
 
-void Engine::open_file(string path, string name, string type) {
+void Engine::open_file(map<string, string> vars) {
+    string name=vars["name"];
+    string path=vars["path"];
     if (name.empty()){
         name = "foo";
     }
@@ -23,8 +27,9 @@ void Engine::list_file() {
         cout << "name=" << files[i].name << " path=" << files[i].path << endl;
     }
 }
-void Engine::close_file(string name) {
+void Engine::close_file(FileInfo file) {
     typedef vector<FileInfo>::size_type size;
+    string name = file.name;
     for (size i = 0; i != files.size(); ++i) {
         if (files[i].name == name) {
            cout << "Remove File name=" << files[i].name << " path=" << files[i].path << endl;
@@ -32,5 +37,7 @@ void Engine::close_file(string name) {
         }
     }
 }
+void Engine::print_file(FileInfo file, int line, int count) {
 
+}
 

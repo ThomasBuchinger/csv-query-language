@@ -9,16 +9,16 @@
 
 class CliParser {
 public:
+    const static int RC_CONTINUE=0;
+    const static int RC_BREAK=1;
+    const static int RC_BAD_CMD=10;
     CliParser(): prompt("$") {}
 
     int run();
-    int handle_command(std::string);
-    std::map<std::string, std::string> parse_kv(std::string);
+    int handle_command(std::map<std::string, std::string>);
 private:
-    bool command_ended(std::string);
+    void log_command(std::map<std::string, std::string>);
     void set_prompt(std::string);
     std::string prompt;
 }; 
-
-bool isequalsign(char c);
 #endif

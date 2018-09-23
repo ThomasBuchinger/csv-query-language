@@ -1,10 +1,15 @@
 #include <iostream>
 #include <vector>
+#include <map>
+#include <string>
 #include <exception>
 #include <cstring>
 #include <boost/algorithm/string.hpp>
+#include <tao/pegtl.hpp>
 #include "../engine/engine.h"
 #include "cli.h"
+#include "grammar_cli.h"
+//#include "hello_grammar.cpp"
 
 using std::endl;
 using std::cin;
@@ -15,8 +20,7 @@ using std::map;
 
 int CliParser::run(){
     string current_line;
-    string command;
-    vector<string> cmd_vec;
+    map<string, string> vars;
     try {
         if (!cin)
             return 2;
@@ -25,67 +29,48 @@ int CliParser::run(){
             getline(cin, current_line);
             if (current_line.empty())
                 continue;
-            int rc = handle_command(current_line);
+            tao::pegtl::memory_input<> in(current_line, "STDIN");
+            tao::pegtl::parse< cli::grammar, cli::impl >(in, vars);
+            int rc = handle_command(vars);
+            vars.clear();
             if (rc == 1)
               break;
         }
         return 0;
     } catch (std::exception e){
       // This will hande EngineExceptions
-      cout << "Command filed:" << e.what() << endl;
+      cout << "Command failed: " << e.what() << endl;
       return 1;
     }
 }
-int CliParser::handle_command(string cmd_line) {
+int CliParser::handle_command(map<string, string> vars) {
     static Engine engine;
-    vector<string> cmd_vec;
-    boost::split(cmd_vec, cmd_line, isspace);
-    map<string, string> vars = parse_kv(cmd_line);
-    string cmd = cmd_vec[0];
-    if (cmd == "open") {
-        cout << "open(): " << endl;
-        engine.open_file(vars["path"], vars["name"], "csv");
-        return 0;
-    } else if ( cmd == "list") {
+    log_command(vars);
+    string action = vars["action"];    
+    if (action == "open") {
+        engine.open_file(vars);
+        return RC_CONTINUE;
+    } else if ( action == "list") {
         cout << "list(): " << endl;
         engine.list_file();
-        return 0;
-    } else if ( cmd == "exit") {
+        return RC_CONTINUE;
+    } else if ( action == "exit") {
         cout << "Bye!" << endl;
-        return 1;
+        return RC_BREAK;
     } else {
         cout << "Command not found" << endl;
-        return 10;
+        return RC_BAD_CMD;
     }
 }
-map<string, string> CliParser::parse_kv(string cmd_line) {
-    map<string, string> vm;
-    vector<string> vec, h;
-    string key, value;
-    typedef vector<string>::size_type vec_s;
-    boost::split(vec, cmd_line, isequalsign);
-    for(vec_s i = 0; i != vec.size(); ++i) {
-        if ( i+1 == vec.size())
-            break;
-        boost::split(h, vec[i], isspace);
-	key = h[h.size()-1];
-	boost::split(h, vec[i+1], isspace);
-        value = h[0];
-        cout << "found var: key=" << key << " value=" << value << endl;
-        vm[key] = value;
+void CliParser::log_command(map<string, string> vars){
+    typedef map<string, string>::const_iterator iter;
+    cout << "DEBUG: " << vars["action"] << ": ";
+    for(iter it = vars.begin(); it != vars.end(); ++it){
+        cout << it->first << "=" << it->second << " ";
     }
-    return vm;
-}
-bool isequalsign(char c) {
-    return c == '=';
-}
-void CliParser::set_prompt(string s) {
-    prompt = s;
+    cout << endl;
 }
 
-bool CliParser::command_ended(const string cmd){
-    //if (cmd.rfind(, 0) == 0) {
-    //    
-    //}
-    return true;
+void CliParser::set_prompt(string s) {
+    prompt = s;
 }

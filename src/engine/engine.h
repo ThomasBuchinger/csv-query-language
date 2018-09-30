@@ -8,10 +8,13 @@
 
 class Engine {
 public:
-    void open_file(std::map<std::string,std::string>);
-    void list_file();
-    void print_file(FileInfo, int, int);
-    void close_file(FileInfo);
+    Engine(): files() {}
+    virtual ~Engine() {}
+
+    virtual void open_file(std::map<std::string,std::string>);
+    virtual void list_file();
+    virtual void print_file(FileInfo, int, int);
+    virtual void close_file(FileInfo);
 
 private:
     FileInfo get_file_by_name(std::string);

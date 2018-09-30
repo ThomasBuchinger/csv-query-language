@@ -1,14 +1,15 @@
 PREFIX   = /usr/local
 SHELL    = /bin/sh
-INCLUDE  = include,/usr/include
+INCLUDE  = -Iinclude -I/usr/include
 LIBS     = lib
-LINKED_LIBS = boost_program_options
+LINKED_LIBS = -lboost_program_options
 
 CXXFLAGS   = -Wall -g -std=c++11
-CC       = g++ -I ${INCLUDE} -l ${LINKED_LIBS}
-LDFLAGS  = 
+CC       = g++ ${INCLUDE} ${LINKED_LIBS}
+LDFLAGS  =
+GMOCK    = -L/usr/lib -L/usr/lib64 -lgmock -lgtest -pthread
 
-.PHONY: clean install uninstall prep engine
+.PHONY: clean install uninstall prep engine test
 
 all: prep engine.a cql
 
@@ -20,6 +21,10 @@ cql: src/bootstrap.cpp src/cli/cli.o
 
 engine.a: src/engine/cmd_file.o src/lib/csv.o
 	ar rvs ${LIBS}/lib$@ $?
+
+test: src/cli/cli.o test/cli/cli_test.cc
+	$(CC) $? -L ${LIBS} -l engine $(GMOCK) -o run-tests
+
 
 prep:
 	-mkdir -p ${LIBS}
@@ -33,6 +38,7 @@ uninstall:
 clean:
 	-rm cql
 	-rm -f $(wildcard src/**/*.h.gch) 
-	-rm -f $(wildcard src/**/*.o) 
-	-rm -f $(wildcard lib/*.a) 
+	-rm -f $(wildcard src/**/*.o)
+	-rm -f lib/libengine.a  
+#	-rm -f $(wildcard lib/*.a) 
 

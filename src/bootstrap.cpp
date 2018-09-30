@@ -2,6 +2,7 @@
 #include <string>
 #include <boost/program_options.hpp>
 #include "cli/cli.h"
+#include "engine/engine.h"
 
 using std::string;
 
@@ -61,8 +62,9 @@ po::variables_map parse_options(int argc, char** argv) {
 int main(int argc, char** argv) {
     try {
         po::variables_map vm = parse_options(argc, argv);
-        CliParser cli;
-        cli.run();
+        Engine e;
+        CliParser cli(e);
+        cli.run(std::cin, std::cout);
     } catch(std::exception& e) {
         std::cerr << e.what() << std::endl;
         return ERROR_UNHANDLED_EXCEPTION;

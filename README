@@ -1,9 +1,16 @@
 # CQL
+This is exercise project for C++. 
+A interactive CSV query tool with an SQL-Like syntax
 
-# Runtime Rependencies
+Used Libraries/Frameworks so far:
+* PEGTL
+* Boost
+* Google test
+
+## Runtime Rependencies
 yum install boost-program-options
 
-# Devel dependencies
+## Devel dependencies
 Make sure the boost program_options library and the boost headers installed
 
 yum install \
@@ -11,3 +18,5 @@ yum install \
   http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/Everything/x86_64/os/Packages/p/PEGTL-devel-2.4.0-2.fc29.x86_64.rpm \
   gtest-devel \
   gmock-devel
+
+NOTE: gmock package is broken on centos. This project uses the 1.8 version compiled from source (gmock and gtest).
